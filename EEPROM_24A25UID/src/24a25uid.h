@@ -28,9 +28,13 @@ class MCP_24A25UID {
     void i2c_close();
     int getError();
 
-    int i2cwrite(int writeValue);
-    int i2cwrite(uint8_t* data, int length);
+    int setAddress(uint8_t address);
+    int byteWrite(uint8_t address, uint8_t writeValue);
+    int pageWrite(uint8_t start_address, uint8_t* data, int length);
+    bool ackPoll();
+
     int i2cread(uint8_t* data, int length);
+    uint8_t getCurrentReadAddress();
 
     void begin();
     void end();

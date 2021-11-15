@@ -36,35 +36,37 @@ void MCP_24A25UID::i2c_close(){
     }
 };
 
-int MCP_24A25UID::i2cwrite(int writeValue){
-    int toReturn = i2c_smbus_write_byte(kI2CFileDescriptor, writeValue);
-    printf("%X\n", toReturn);
-    return toReturn;
-};
-
-int MCP_24A25UID::i2cwrite(uint8_t* data, int length){
-    return write(kI2CFileDescriptor, data, length);
-
+int MCP_24A25UID::getError(){
+    return error
 }
 
-int MCP_24A25UID::i2cread(uint8_t* data, int length){
-    uint8_t buffer[6];
-    read(kI2CFileDescriptor, buffer, 6);
-    for(int i = 0; i < 6; ++i){
-        printf("0x%X\n", buffer[i]);
+int MCP_24A25UID::setAddress(uint8_t address){
+    return i2c_smbus_write_byte(kI2CFileDescriptor, writeValue);
+}
+
+int MCP_24A25UID::byteWrite(uint8_t address, uint8_t writeValue){
+    uint8_t buffer[2] = {address, writeValue};
+    return write(kI2CFileDescriptor, buffer, 2);
+};
+
+int MCP_24A25UID::pageWrite(uint8_t start_address, uint8_t* data, uint8_t length){
+    // This should track page location and prevent rollover
+    // Should rollover data be written to the next page?
+    // Max Address write address 0x79
+    // Page size 16 bytes
+    // Verify data to write fits in memory
+    if((start_address + length) > 0x80){
+        return -1;
     }
-    return 1;
-    // return i2c_smbus_read_byte(kI2CFileDescriptor);
+    uint8_t buffer[16];
+
 }
 
-void MCP_24A25UID::begin(){
-    uint8_t cmdBuffer[9] = {0x00, 0x00, 0xFF, 0x02, 0xFE, 0xD4, 0x02, 0x2A, 0x00};
-    i2cwrite(cmdBuffer, 9);
-    uint8_t buffer[6] = {0,0,0,0,0,0};
-    i2cread(buffer, 6);
-    // for (int i = 0; i < 6; ++i){
-    //     buffer[i] = (uint8_t)i2cread();
-    //     printf("0x%X\n", buffer[i]);
-    // }
-};
+bool MCP_24A25UID::ackPoll(){
+    write(kI2CFileDescriptor, (uint8_t*)null, 0);
+}
+
+
+
+void MCP_24A25UID::begin(){};
 void MCP_24A25UID::end(){};
