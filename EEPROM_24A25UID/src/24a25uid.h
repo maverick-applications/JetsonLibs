@@ -34,7 +34,7 @@ class MCP_24A25UID {
     bool ackPoll();
 
     int i2cread(uint8_t* data, int length);
-    uint8_t getCurrentReadAddress();
+    int readFromAddress(uint8_t address, uint8_t* data, int length);
 
     void begin();
     void end();
